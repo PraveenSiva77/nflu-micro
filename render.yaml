@@ -1,0 +1,41 @@
+services:
+  # 1. QR Service
+  - type: web
+    name: nfluencer-qr-service
+    env: docker
+    dockerContext: qr_service
+    dockerfilePath: Dockerfile
+    plan: free
+    region: singapore
+    healthCheckPath: /
+    envVars:
+      - key: PORT
+        value: 8001
+
+  # 2. Audio Service (Whisper)
+  - type: web
+    name: nfluencer-audio-service
+    env: docker
+    dockerContext: audio_service
+    dockerfilePath: Dockerfile
+    plan: free
+    region: singapore
+    healthCheckPath: /
+    envVars:
+      - key: PORT
+        value: 8000
+      - key: WHISPER_MODEL
+        value: base
+
+  # 3. OCR Service (Paddle/EasyOCR)
+  - type: web
+    name: nfluencer-ocr-service
+    env: docker
+    dockerContext: ocr_service
+    dockerfilePath: Dockerfile
+    plan: free
+    region: singapore
+    healthCheckPath: /
+    envVars:
+      - key: PORT
+        value: 8003
