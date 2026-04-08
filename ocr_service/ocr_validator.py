@@ -3,7 +3,6 @@ import json
 import logging
 import re
 import os
-import easyocr
 
 # 1. SUPPRESS ALL PADDLE LOGS
 os.environ["PADDLE_PDX_DISABLE_MODEL_SOURCE_CHECK"] = "True"
@@ -68,9 +67,7 @@ def extract_text_with_paddle(image_path):
     return extracted_text_lines
 
 
-def extract_text_with_easyocr(image_path):
-    reader = easyocr.Reader(['en'], gpu=False, verbose=False)
-    return reader.readtext(image_path, detail=0)
+# EasyOCR removed to save memory on 512MB RAM environments
 
 
 def parse_amount_candidates(text):
@@ -111,11 +108,8 @@ def validate_document(image_path, doc_type='GENERIC', expected_value=None):
         return result
 
     try:
-        try:
-            extracted_text_lines = extract_text_with_paddle(image_path)
-        except Exception as paddle_error:
-            logging.warning("PaddleOCR failed, falling back to EasyOCR: %s", paddle_error)
-            extracted_text_lines = extract_text_with_easyocr(image_path)
+        # PaddleOCR is the sole engine now to stay within 512MB RAM
+        extracted_text_lines = extract_text_with_paddle(image_path)
         
         full_text_raw = " ".join(extracted_text_lines).upper()
 
