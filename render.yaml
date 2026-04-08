@@ -4,7 +4,7 @@ services:
     name: nfluencer-qr-service
     env: docker
     dockerContext: qr_service
-    dockerfilePath: Dockerfile
+    dockerfilePath: qr_service/Dockerfile
     plan: free
     region: singapore
     healthCheckPath: /
@@ -17,7 +17,7 @@ services:
     name: nfluencer-audio-service
     env: docker
     dockerContext: audio_service
-    dockerfilePath: Dockerfile
+    dockerfilePath: audio_service/Dockerfile
     plan: free
     region: singapore
     healthCheckPath: /
@@ -32,7 +32,7 @@ services:
     name: nfluencer-ocr-service
     env: docker
     dockerContext: ocr_service
-    dockerfilePath: Dockerfile
+    dockerfilePath: ocr_service/Dockerfile
     plan: free
     region: singapore
     healthCheckPath: /
