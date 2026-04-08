@@ -12,6 +12,10 @@ from fastapi.responses import JSONResponse
 
 app = FastAPI(title="QR Scanning Microservice")
 
+@app.get("/")
+async def root():
+    return {"message": "QR Service is running"}
+
 class SessionCreate(BaseModel):
     user_id: str
     webhook_url: Optional[str] = None

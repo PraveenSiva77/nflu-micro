@@ -9,6 +9,10 @@ from ocr_validator import validate_document, TEMP_DIR
 
 app = FastAPI()
 
+@app.get("/")
+async def root():
+    return {"message": "OCR Service is running"}
+
 # Ensure temp directory exists
 os.makedirs(TEMP_DIR, exist_ok=True)
 
