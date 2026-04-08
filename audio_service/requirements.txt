@@ -1,0 +1,19 @@
+# Core API framework
+fastapi==0.115.12
+uvicorn[standard]==0.34.0
+python-multipart==0.0.20
+
+# Whisper inference engine
+faster-whisper>=1.0,<2
+
+# faster-whisper runtime dependencies (pinned for reproducibility)
+ctranslate2>=4.0,<5
+huggingface_hub>=0.23
+tokenizers>=0.13,<1
+onnxruntime>=1.14,<2
+av>=11
+tqdm
+
+# Fallback audio decoders for non-standard WAV formats (no ffmpeg required)
+soundfile>=0.12
+scipy>=1.10

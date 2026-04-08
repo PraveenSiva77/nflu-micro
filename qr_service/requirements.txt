@@ -1,0 +1,10 @@
+fastapi
+uvicorn[standard]
+jinja2
+python-multipart
+httpx
+pydantic
+pyzbar
+opencv-python-headless
+motor
+dnspython

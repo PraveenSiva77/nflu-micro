@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NF Scanner</title>
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <style>
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: #0f172a;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+        }
+        #reader {
+            width: 100%;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+        .status {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 8px;
+            background: #1e293b;
+            font-size: 0.9rem;
+        }
+        h1 { margin-bottom: 24px; font-weight: 700; color: #38bdf8; }
+        .success { color: #4ade80; display: none; }
+        .loading { display: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Nfluencer Scan</h1>
+        
+        <div id="reader"></div>
+
+        <div id="status-box" class="status">
+            <span id="instruction">Please point your camera at the QR code</span>
+            <span id="loading-msg" class="loading">Processing...</span>
+            <span id="success-msg" class="success">✅ Scan Complete! You can close this window now.</span>
+        </div>
+    </div>
+
+    <script>
+        const sessionId = "{{ session_id }}";
+        const currentStatus = "{{ status }}";
+
+        if (currentStatus === "COMPLETED") {
+            document.getElementById('instruction').style.display = 'none';
+            document.getElementById('success-msg').style.display = 'block';
+        } else if (currentStatus === "ERROR") {
+            document.getElementById('instruction').innerHTML = "❌ <b>Internal Server Error</b><br><small>" + "{{ error_detail }}" + "</small>";
+            document.getElementById('status-box').style.background = "#450a0a";
+        } else {
+            function onScanSuccess(decodedText, decodedResult) {
+                console.log(`Code matched = ${decodedText}`, decodedResult);
+                
+                // Stop scanner
+                html5QrcodeScanner.clear();
+                
+                document.getElementById('instruction').style.display = 'none';
+                document.getElementById('loading-msg').style.display = 'block';
+
+                // Send to Backend
+                fetch(`/sessions/${sessionId}/submit`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ scanned_data: decodedText })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('loading-msg').style.display = 'none';
+                    document.getElementById('success-msg').style.display = 'block';
+                })
+                .catch(err => {
+                    console.error('Submission failed:', err);
+                    alert("Scan failed. Please refresh and try again.");
+                });
+            }
+
+            let html5QrcodeScanner = new Html5QrcodeScanner(
+                "reader", { fps: 10, qrbox: {width: 250, height: 250} }, /* verbose= */ false);
+            html5QrcodeScanner.render(onScanSuccess);
+        }
+    </script>
+</body>
+</html>
