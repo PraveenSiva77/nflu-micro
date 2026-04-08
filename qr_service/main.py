@@ -53,12 +53,16 @@ async def global_exception_handler(request: Request, exc: Exception):
 
     # Determine if request is an API call or a Web Scanner load
     if request.url.path.startswith("/scan"):
-        return templates.TemplateResponse("index.html", {
-            "request": request,
-            "session_id": "error",
-            "status": "ERROR",
-            "error_detail": str(exc)
-        }, status_code=500)
+        return templates.TemplateResponse(
+            request=request,
+            name="index.html",
+            context={
+                "session_id": "error",
+                "status": "ERROR",
+                "error_detail": str(exc)
+            },
+            status_code=500
+        )
     
     # Return JSON for all other API endpoints (/sessions, /decode, etc.)
     return JSONResponse({
@@ -118,11 +122,14 @@ async def get_scanner(request: Request, session_id: str):
         print(f"❌ Session {session_id} not found")
         raise HTTPException(status_code=404, detail="Invalid Session")
         
-    return templates.TemplateResponse("index.html", {
-        "request": request,
-        "session_id": session_id,
-        "status": session["status"]
-    })
+    return templates.TemplateResponse(
+        request=request,
+        name="index.html",
+        context={
+            "session_id": session_id,
+            "status": session["status"]
+        }
+    )
 
 
 @app.post("/sessions/{session_id}/submit")
